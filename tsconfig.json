@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+      "module": "es6",
+      "noImplicitAny": true,
+      "removeComments": true,
+      "preserveConstEnums": true,
+      "outDir": "build/",
+      "jsx": "react",
+      "sourceMap": true,
+      "target": "es2015",
+  },
+  "include": [
+      "src/**/*"
+  ],
+  "exclude": [
+  ]
+}
