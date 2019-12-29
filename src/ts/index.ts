@@ -7,7 +7,7 @@ window.onload = () => {
   const svg = document.getElementById('svg');
   const things: Thing[] = [];
   const row = 15;
-  for( let i=0; i<200; i++) {
+  for( let i=0; i<400; i++) {
     const x = (i % row) * 100 - 300;
     const y = Math.floor(i / row) * 100 - 300;
     const thing = new Thing(
@@ -35,11 +35,11 @@ window.onload = () => {
     //const t = new TWEEN.Tween({value: thing.rotation[2]}).to({value: Math.PI/3}, 1).repeat(10).onUpdate((({value}: {value: any}) => thing.rotation[2] = value));
     const yPosition = {y};
     const zyRotation = {
-      //z: -Math.PI/16,
-      y: -Math.PI/32,
+      y: -Math.PI/8,
+      z: Math.PI/8,
     };
     const yRotation = {value: 0};
-    const zPosition = {value: -10};
+    const zPosition = {value: 0};
     const scale = {x: 1.1, y: 1};
     const walkTime = i+2;
     const stepRepeat = 20;
@@ -49,22 +49,22 @@ window.onload = () => {
       ease: 'none',
       onUpdate: () => thing.position[1] = yPosition.y,
     }).to(zyRotation, stepTime, {
-      y: Math.PI/32,
-      //z: Math.PI/16,
+      y: Math.PI/8,
+      z: -Math.PI/8,
       repeat: stepRepeat,
-      ease: 'power2.in',
+      ease: 'power3.in.out',
       yoyo: true,
       yoyoEase: true,
       onUpdate: () => {
         thing.rotation[1] = zyRotation.y;
-        //thing.rotation[2] = zyRotation.z;
+        thing.rotation[2] = zyRotation.z;
       },
       onComplete: () => {
         thing.rotation[1] = 0;
         thing.rotation[2] = 0;
       },
     }, 0).to(zPosition, stepTime/2, {
-      value: 0,
+      value: 10,
       repeat: stepRepeat * 2,
       ease: 'power1.in',
       onUpdate: () => thing.position[2] = zPosition.value,
