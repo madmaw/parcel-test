@@ -1,0 +1,51 @@
+.mixer, #left, #right {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.eye {
+    perspective: 800px;
+    perspective-origin: center top;
+    mix-blend-mode: multiply;
+    background-color: #000;    
+}
+
+.abs {
+    position: absolute;
+    text-align: center;
+}
+
+.defs-only {
+    position: absolute;
+    height: 1000px; 
+    width: 1000px;
+    overflow: none;
+    display: hidden;
+}
+
+.mixer {
+    isolation: isolate; /* ignore background */
+}
+
+.select-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+body {
+    overflow: hidden;
+}
+
+.none #right {
+    mix-blend-mode: unset;
+}
+
+.none #left {
+    display: hidden;
+}
+
+/*# sourceMappingURL=/parcel-test.465993f8.css.map */
