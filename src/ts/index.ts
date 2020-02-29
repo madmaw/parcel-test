@@ -3,18 +3,58 @@ import * as ReactDOM from 'react-dom';
 import { mat4, vec3 } from 'gl-matrix';
 import * as gsap from 'gsap';
 
+
+const colors = [
+  '#000',
+  '#f00',
+  '#0f0',
+  '#00f',
+  '#ff0',
+  '#0ff',
+  '#f0f',
+  '#f88',
+  '#8f8',
+  '#88f',
+  '#ff8',
+  '#f8f',
+  '#8ff',
+  '#fff',
+];
+
 window.onload = () => {
-  const svg = document.getElementById('svg');
-  const things: Thing[] = [];
-  const row = 15;
-  for( let i=0; i<400; i++) {
-    const x = (i % row) * 100 - 300;
-    const y = Math.floor(i / row) * 100 - 300;
+  const left = document.getElementById('left');
+  const right = document.getElementById('right');
+  const select = document.getElementById('select') as HTMLSelectElement;
+  const onselect = (e?: Event) => {
+    let value = select.value;
+    if (e) {
+      window.location.hash = select.value;
+    } else {
+      if (window.location.hash != '' && window.location.hash != null) {
+        value = window.location.hash.substr(1);
+        select.value = value;
+      }
+    }
+    left.setAttribute('style', `filter: url(#red-${value})`);
+    right.setAttribute('style', `filter: url(#cyan-${value})`);
+    document.body.className = value;
+  };
+  select.onchange = onselect;
+  onselect();
+  const things: Thing[] = []; 
+  const row = 4;
+  const count = colors.length;
+  for( let i=0; i<count; i++) {
+    const x = (i % row - row/2) * 100;
+    //const x = (i % row) * 100 + 50;
+    const y = (Math.floor(i / row) ) * 100;
+    const color = colors[i % colors.length];
     const thing = new Thing(
       `a${i}`,
       //'☻',
-      '@',
-      'magenta',
+      //'@',
+      color,
+      color,
       undefined,
       vec3.fromValues(x, y, 0),
       vec3.fromValues(-Math.PI/2, 0, 0),
@@ -23,10 +63,10 @@ window.onload = () => {
     );
     const tile = new Thing(
       `b${i}`,
-      ' ',
+      null,
       'red',
-      'black',
-      vec3.fromValues(x, y + 100, 0),
+      '#444',
+      vec3.fromValues(x, y, 0),
       vec3.fromValues(0, 0, 0),
     );
     things.push(thing);
@@ -93,26 +133,122 @@ window.onload = () => {
     });
 
   }
-  const projection = mat4.create();
-  mat4.identity(projection);
-  mat4.translate(projection, projection, [200, 200, 0]);
-  mat4.rotateX(projection, projection, Math.PI/3);
-  mat4.rotateZ(projection, projection, Math.PI/5);
-  const tmp = mat4.create();
-  const f = (time: number) => {
-    things.forEach(t => {
-      if (t.element == null) {
-        return;
+
+  const v = {
+    zRotation: Math.PI/4,
+    xRotation: 0,
+    x: 0, 
+    y: 0,
+    z: 0,
+  }
+
+  //
+  //mat4.multiply(projection, projection, mat4.perspective(mat4.create(), Math.PI/3, container.clientWidth/container.clientHeight, 0, 500));
+
+  let eyeDelta = 4;
+  const keys: {[_: number]: boolean } = {};
+  window.onkeydown = (e: KeyboardEvent) => {
+    keys[e.keyCode] = true;
+    e.preventDefault();
+  };
+  window.onkeyup = (e: KeyboardEvent) => {
+    keys[e.keyCode] = false;
+    e.preventDefault();
+  };
+  let previousSeconds = 0;
+  const e: {
+    thing: Thing,
+    left: HTMLElement,
+    right: HTMLElement,
+  }[] = [];
+  const tmp = mat4.create(); 
+  const f = (seconds: number) => {
+    const delta = seconds - previousSeconds;
+    previousSeconds = seconds;
+
+    const shift = keys[16];
+    // left
+    if (keys[37]) {
+      if (shift) {
+        v.x -= delta * 1000;
+      } else {
+        v.zRotation -= delta * Math.PI;           
       }
-      t.update(projection, tmp);
+    }
+    // right
+    if (keys[39]) {
+      if (shift) {
+        v.x += delta * 1000;
+      } else {
+        v.zRotation += delta * Math.PI;
+      }
+    }
+    // up 
+    if (keys[38]) {
+      if (shift) {
+        v.y += delta * 1000;
+      } else {
+        v.z += delta * 1000;
+      }
+    }
+    // down 
+    if (keys[40]) {
+      if (shift) {
+        v.y -= delta * 1000;
+      } else {
+        v.z -= delta * 1000;
+      }
+    }
+    // a
+    if (keys[65]) {
+      if (shift) {
+        eyeDelta += delta;
+        console.log('eye delta', eyeDelta);
+      } else {
+        v.xRotation += delta * Math.PI;
+      }
+    }
+    // z 
+    if (keys[90]) {
+      if (shift) {
+        eyeDelta -= delta;
+        console.log('eye delta', eyeDelta);
+      } else {
+        v.xRotation -= delta * Math.PI;
+      }
+    }
+
+    const projection = mat4.create();
+    mat4.identity(projection);
+    mat4.translate(projection, projection, [window.innerWidth/2 + v.x, window.innerHeight/2 + v.y, v.z]);
+    //mat4.translate(projection, projection, [0, container.clientHeight/2, 500]);
+    mat4.rotateX(projection, projection, Math.PI/2 + v.xRotation);
+    mat4.rotateZ(projection, projection, v.zRotation);
+    const leftProjection = mat4.multiply(mat4.create(), mat4.fromTranslation(mat4.create(), [-eyeDelta, 0, 0]), projection);
+    const rightProjection = mat4.multiply(mat4.create(), mat4.fromTranslation(mat4.create(), [eyeDelta, 0, 0]), projection);
+
+    e.forEach(e => {
+      const thing = e.thing;
+      thing.update(leftProjection, tmp, e.left);
+      thing.update(rightProjection, tmp, e.right);
     });
   };
 
   things.forEach(thing => {
-    const g = document.createElementNS(svg.namespaceURI, 'g') as HTMLElement;
-    thing.element = g;
-    svg.appendChild(g);
-    ReactDOM.render(thing.render(), g);
+    const thingLeft = document.createElement('div') as HTMLElement;
+    const thingRight = document.createElement('div') as HTMLElement;
+    thingLeft.className = thingRight.className  = 'abs'; 
+    
+    left.appendChild(thingLeft);
+    right.appendChild(thingRight);
+    ReactDOM.render(thing.render(), thingLeft);
+    ReactDOM.render(thing.render(), thingRight);
+
+    e.push({
+      thing,
+      left: thingLeft,
+      right: thingRight,
+    })
   });
 
   //window.requestAnimationFrame(f);

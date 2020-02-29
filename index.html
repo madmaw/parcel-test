@@ -1,14 +1,146 @@
 <html>
+<head>
+  <link rel="stylesheet" type="text/css" href="index.css" />
+  <!-- most values from http://stereo.jpn.org/eng/stphmkr/help/stereo_13.htm -->
+  <svg class="defs-only">
+    <!-- red/cyan monochrome -->
+    <filter id="red-mono-rc" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values="0 0 0 0  1 
+                .3 .3 .3 0  .1 
+                .3 .3 .3 0  .1
+                0 0 0 1  0" />
+    </filter>
+    <filter id="cyan-mono-rc" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values=".3 .3 .3 0  .1 
+                0 0 0 0  1 
+                0 0 0 0  1 
+                0 0 0 1  0" />
+    </filter>
+    <!-- red/blue monochrome -->
+    <filter id="red-mono-rb" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values="0 0 0 0  1 
+                0 1 0 0  0 
+                .5 0 .5 0  0
+                0 0 0 1  0" />
+    </filter>
+    <filter id="cyan-mono-rb" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values=".5 0 .5 0  0 
+                0 1 0 0  0 
+                0 0 0 0  1 
+                0 0 0 1  0" />
+    </filter>
+    <!-- color mode (r - r, g/b - g/b) -->
+    <filter id="red-c" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values="0 0 0 0  1 
+                0 1 0 0  0 
+                0 0 1 0  0
+                0 0 0 1  0" />
+    </filter>
+    <filter id="cyan-c" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values="1 0 0 0  0 
+                0 0 0 0  1 
+                0 0 0 0  1 
+                0 0 0 1  0" />
+    </filter>
+    <!-- half color mode (r - mono, g/b full) -->
+    <filter id="red-hc" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values="0 0 0 0  1 
+                .5 .5 0 0  0 
+                .5 0 .5 0  0
+                0 0 0 1  0" />
+    </filter>
+    <filter id="cyan-hc" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values=".3 .3 .3 0  .1 
+                0 0 0 0  1 
+                0 0 0 0  1 
+                0 0 0 1  0" />
+    </filter>
+    <!-- half color mode 2 (r - mono, g/b full) -->
+    <filter id="red-hc-2" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values="0 0 0 0  1 
+                0 1 0 0  0 
+                0 0 1 0  0
+                0 0 0 1  0" />
+    </filter>
+    <filter id="cyan-hc-2" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values=".299 .587 .114 0  0
+                0 0 0 0  1 
+                0 0 0 0  1 
+                0 0 0 1  0" />
+    </filter>    
+    <!-- optimised color mode -->
+    <filter id="red-opt" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values="0 0 0 0  1 
+                0 1 0 0  0 
+                0 0 1 0  0
+                0 0 0 1  0" />
+    </filter>
+    <filter id="cyan-opt" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values="0 .45 1.05 0  0 
+                0 0 0 0  1 
+                0 0 0 0  1 
+                0 0 0 1  0" />
+    </filter>
+    <!-- dubois color mode -->
+    <filter id="red-dub" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values="-.043 -0.088 -0.002 0  1 
+                0.378 0.734 -0.018 0  0 
+                -0.072 -0.113 1.226 0  0
+                0 0 0 1  0" />
+    </filter>
+    <filter id="cyan-dub" color-interpolation-filters="sRGB"
+        x="-500px" y="-500px" height="1000px" width="1000px">
+      <feColorMatrix type="matrix"
+        values=".456 0.5 0.176 0  0 
+                -0.04 -0.038 -0.016 0  1 
+                -0.015 -0.021 -0.05 0  1 
+                0 0 0 1  0" />
+    </filter>
+  </svg>
+</head>
 <body>
   <script src="./src/ts/index.ts"></script>
-  <svg
-    id='svg'
-    version="1.1"
-    baseProfile="full"
-    width="1200"
-    height="600"
-    xmlns="http://www.w3.org/2000/svg"
-    color-interpolation-filters="sRGB">
-  </svg>
+  <div class="mixer">
+    <div id="left" class="eye"></div>
+    <div id="right" class="eye"></div>
+  </div>
+  <div class="select-container">
+    <select id="select">
+      <option value="none">None</option>
+      <option value="mono-rc">Monochrome Red-Cyan</option>
+      <option value="mono-rb">Monochrome Red-Blue</option>
+      <option value="c">Full Color</option>
+      <option value="hc">Half Color</option>
+      <option value="hc-2">Half Color 2</option>
+      <option value="opt">Optimised</option>
+      <option value="dub">Dubios</option>
+    </select>
+  </div>  
 </body>
 </html>
